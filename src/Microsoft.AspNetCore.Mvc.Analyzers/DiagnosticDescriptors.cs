@@ -42,5 +42,14 @@ namespace Microsoft.AspNetCore.Mvc.Analyzers
                 "Usage",
                 DiagnosticSeverity.Warning,
                 isEnabledByDefault: true);
+
+        public static readonly DiagnosticDescriptor MVC1004_ActionReturnsUndocumentedStatusCode =
+            new DiagnosticDescriptor(
+                "MVC1004",
+                "Action returns undeclared status code.",
+                "Action method returns undeclared status code '{0}'.",
+                "Usage",
+                DiagnosticSeverity.Warning,
+                isEnabledByDefault: true);
     }
 }

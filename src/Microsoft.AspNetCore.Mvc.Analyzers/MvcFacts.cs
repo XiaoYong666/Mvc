@@ -55,6 +55,16 @@ namespace Microsoft.AspNetCore.Mvc.Analyzers
             return true;
         }
 
+        public static bool IsApiController(
+            INamedTypeSymbol type, 
+            INamedTypeSymbol controllerAttribute, 
+            INamedTypeSymbol nonControllerAttribute, 
+            INamedTypeSymbol apiBehaviorMetadata)
+        {
+            return IsController(type, controllerAttribute, nonControllerAttribute) &&
+                type.HasAttribute(apiBehaviorMetadata, inherit: true);
+        }
+
         public static bool IsControllerAction(IMethodSymbol method, INamedTypeSymbol nonActionAttribute, IMethodSymbol disposableDispose)
         {
             Debug.Assert(method != null);

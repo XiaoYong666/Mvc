@@ -15,6 +15,10 @@ namespace Microsoft.AspNetCore.Mvc.Analyzers
 
         public const string AuthorizeAttribute = "Microsoft.AspNetCore.Authorization.AuthorizeAttribute";
 
+        public const string ControllerAttribute = "Microsoft.AspNetCore.Mvc.ControllerAttribute";
+
+        public const string IApiBehaviorMetadata = "Microsoft.AspNetCore.Mvc.Internal.IApiBehaviorMetadata";
+
         public const string IFilterMetadataType = "Microsoft.AspNetCore.Mvc.Filters.IFilterMetadata";
 
         public const string HtmlHelperPartialExtensionsType = "Microsoft.AspNetCore.Mvc.Rendering.HtmlHelperPartialExtensions";
@@ -22,6 +26,10 @@ namespace Microsoft.AspNetCore.Mvc.Analyzers
         public const string IHtmlHelperType = "Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper";
 
         public const string IRouteTemplateProvider = "Microsoft.AspNetCore.Mvc.Routing.IRouteTemplateProvider";
+
+        public const string NonActionAttribute = "Microsoft.AspNetCore.Mvc.NonActionAttribute";
+
+        public const string NonControllerAttribute = "Microsoft.AspNetCore.Mvc.NonControllerAttribute";
 
         public const string PageModelAttributeType = "Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageModelAttribute";
 
