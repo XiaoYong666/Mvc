@@ -3,11 +3,14 @@
 
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Internal;
 
 namespace Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure
 {
-    public class PageBoundPropertyDescriptor : ParameterDescriptor
+    public class PageBoundPropertyDescriptor : ParameterDescriptor, IPropertyInfoParameterDescriptor
     {
         public PropertyInfo Property { get; set; }
+
+        PropertyInfo IPropertyInfoParameterDescriptor.PropertyInfo => Property;
     }
 }

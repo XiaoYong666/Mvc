@@ -31,6 +31,8 @@ namespace BasicWebSite
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .AddXmlDataContractSerializerFormatters();
 
+            services.Configure<MvcJsonOptions>(options => { options.SerializerSettings.Converters.Insert(0, new IPersonConverter()); });
+
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 var previous = options.InvalidModelStateResponseFactory;

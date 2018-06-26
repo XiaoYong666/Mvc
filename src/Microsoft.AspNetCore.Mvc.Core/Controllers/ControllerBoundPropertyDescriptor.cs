@@ -3,13 +3,14 @@
 
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Internal;
 
 namespace Microsoft.AspNetCore.Mvc.Controllers
 {
     /// <summary>
     /// A descriptor for model bound properties of a controller.
     /// </summary>
-    public class ControllerBoundPropertyDescriptor : ParameterDescriptor
+    public class ControllerBoundPropertyDescriptor : ParameterDescriptor, IPropertyInfoParameterDescriptor
     {
         /// <summary>
         /// Gets or sets the <see cref="PropertyInfo"/> for this property.

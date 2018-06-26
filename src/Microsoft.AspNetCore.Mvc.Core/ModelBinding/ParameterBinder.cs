@@ -283,6 +283,8 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
             ModelBindingContext modelBindingContext,
             ModelBindingResult modelBindingResult)
         {
+            TryCalculateModelMetadata(parameter, modelBindingResult, ref metadata);
+
             if (!modelBindingResult.IsModelSet && metadata.IsBindingRequired)
             {
                 // Enforce BindingBehavior.Required (e.g., [BindRequired])
@@ -328,6 +330,41 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
                     modelName,
                     modelBindingResult.Model,
                     metadata);
+            }
+        }
+
+        private void TryCalculateModelMetadata(
+            ParameterDescriptor parameter,
+            in ModelBindingResult modelBindingResult,
+            ref ModelMetadata metadata)
+        {
+            // Attempt to recalculate ModelMetadata for top level parameters and properties using the actual
+            // model type. This would ensure validation uses a combination of top-level validation metadata
+            // as well as metadata on the actual, rather than declared, model type.
+
+            if (!modelBindingResult.IsModelSet ||
+                modelBindingResult.Model == null ||
+                !(_modelMetadataProvider is ModelMetadataProvider modelMetadataProvider))
+            {
+                return;
+            }
+
+            var modelType = modelBindingResult.Model.GetType();
+            if (parameter is IParameterInfoParameterDescriptor parameterInfoParameter)
+            {
+                var parameterInfo = parameterInfoParameter.ParameterInfo;
+                if (modelType != parameterInfo.ParameterType)
+                {
+                    metadata = modelMetadataProvider.GetMetadataForParameter(parameterInfo, modelType);
+                }
+            }
+            else if (parameter is IPropertyInfoParameterDescriptor propertyInfoParameter)
+            {
+                var propertyInfo = propertyInfoParameter.PropertyInfo;
+                if (modelType != propertyInfo.PropertyType)
+                {
+                    metadata = modelMetadataProvider.GetMetadataForProperty(propertyInfo, modelType);
+                }
             }
         }
     }

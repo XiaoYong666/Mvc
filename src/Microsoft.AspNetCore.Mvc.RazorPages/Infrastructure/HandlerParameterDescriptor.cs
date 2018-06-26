@@ -3,10 +3,11 @@
 
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Internal;
 
 namespace Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure
 {
-    public class HandlerParameterDescriptor : ParameterDescriptor
+    public class HandlerParameterDescriptor : ParameterDescriptor, IParameterInfoParameterDescriptor
     {
         public ParameterInfo ParameterInfo { get; set; }
     }

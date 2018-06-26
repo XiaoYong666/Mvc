@@ -67,16 +67,24 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Metadata
         }
 
         public static ModelMetadataIdentity ForParameter(ParameterInfo parameter)
+            => ForParameter(parameter, parameter?.ParameterType);
+
+        public static ModelMetadataIdentity ForParameter(ParameterInfo parameter, Type modelType)
         {
             if (parameter == null)
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
 
+            if (modelType == null)
+            {
+                throw new ArgumentNullException(nameof(modelType));
+            }
+
             return new ModelMetadataIdentity()
             {
                 Name = parameter.Name,
-                ModelType = parameter.ParameterType,
+                ModelType = modelType,
                 ParameterInfo = parameter,
             };
         }
