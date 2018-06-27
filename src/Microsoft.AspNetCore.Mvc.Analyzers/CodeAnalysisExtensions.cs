@@ -119,6 +119,34 @@ namespace Microsoft.AspNetCore.Mvc.Analyzers
             return false;
         }
 
+        // Based on http://source.roslyn.io/#Microsoft.CodeAnalysis.Features/Shared/Extensions/ISymbolExtensions_2.cs,299
+        public static ITypeSymbol InferAwaitableReturnType(this ITypeSymbol typeSymbol, SemanticModel semanticModel, int position)
+        {
+            var potentialGetAwaiters = semanticModel.LookupSymbols(
+                position, 
+                container: typeSymbol, 
+                name: WellKnownMemberNames.GetAwaiter, 
+                includeReducedExtensionMethods: true);
+            var getAwaiters = potentialGetAwaiters.OfType<IMethodSymbol>().Where(x => !x.Parameters.Any());
+            if (!getAwaiters.Any())
+            {
+                return null;
+            }
+
+            var getResults = getAwaiters.SelectMany(g => semanticModel.LookupSymbols(
+                position, 
+                container: g.ReturnType, 
+                name: WellKnownMemberNames.GetResult));
+
+            var getResult = getResults.OfType<IMethodSymbol>().FirstOrDefault(g => !g.IsStatic);
+            if (getResult == null)
+            {
+                return null;
+            }
+
+            return getResult.ReturnType;
+        }
+
         private static bool HasAttribute(this ISymbol symbol, ITypeSymbol attribute)
         {
             foreach (var declaredAttribute in symbol.GetAttributes())
@@ -140,6 +168,33 @@ namespace Microsoft.AspNetCore.Mvc.Analyzers
 
                 typeSymbol = typeSymbol.BaseType;
             }
+        }
+
+        private static bool VerifyGetAwaiter(IMethodSymbol getAwaiter)
+        {
+            var returnType = getAwaiter.ReturnType;
+            if (returnType == null)
+            {
+                return false;
+            }
+
+            // bool IsCompleted { get }
+            if (!returnType.GetMembers().OfType<IPropertySymbol>().Any(p => p.Name == WellKnownMemberNames.IsCompleted && p.Type.SpecialType == SpecialType.System_Boolean && p.GetMethod != null))
+            {
+                return false;
+            }
+
+            var methods = returnType.GetMembers().OfType<IMethodSymbol>();
+
+            // void OnCompleted(Action) 
+            // Actions are delegates, so we'll just check for delegates.
+            if (!methods.Any(x => x.Name == WellKnownMemberNames.OnCompleted && x.ReturnsVoid && x.Parameters.Length == 1 && x.Parameters.First().Type.TypeKind == TypeKind.Delegate))
+            {
+                return false;
+            }
+
+            // void GetResult() || T GetResult()
+            return methods.Any(m => m.Name == WellKnownMemberNames.GetResult && !m.Parameters.Any());
         }
     }
 }

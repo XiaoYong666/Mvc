@@ -51,5 +51,23 @@ namespace Microsoft.AspNetCore.Mvc.Analyzers
                 "Usage",
                 DiagnosticSeverity.Warning,
                 isEnabledByDefault: true);
+
+        public static readonly DiagnosticDescriptor MVC1005_ActionReturnsUndocumentedSuccessResult =
+            new DiagnosticDescriptor(
+                "MVC1005",
+                "Action returns undeclared success result.",
+                "Action method returns a success result without a corresponding ProducesResponseType.",
+                "Usage",
+                DiagnosticSeverity.Warning,
+                isEnabledByDefault: true);
+
+        public static readonly DiagnosticDescriptor MVC1006_ActionDoesNotReturnDocumentedStatusCode =
+            new DiagnosticDescriptor(
+                "MVC1006",
+                "Action documents status code that is not returned.",
+                "Action method documents success result '{0}' without a corresponding return type.",
+                "Usage",
+                DiagnosticSeverity.Info,
+                isEnabledByDefault: true);
     }
 }

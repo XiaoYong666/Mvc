@@ -14,8 +14,19 @@ namespace Microsoft.AspNetCore.Mvc.Analyzers
 
         internal static IList<ApiResponseMetadata> GetResponseMetadata(ApiControllerSymbolCache symbolCache, IMethodSymbol methodSymbol)
         {
-            var responseMetadataAttributes = methodSymbol.GetAttributes(symbolCache.ProducesResponseTypeAttribute, inherit: true);
+            var metadataItems = GetResponseMetadataFromAttributes(symbolCache, methodSymbol);
+            if (metadataItems.Count != 0)
+            {
+                return metadataItems;
+            }
+
+            return metadataItems;
+        }
+
+        private static List<ApiResponseMetadata> GetResponseMetadataFromAttributes(ApiControllerSymbolCache symbolCache, IMethodSymbol methodSymbol)
+        {
             var metadataItems = new List<ApiResponseMetadata>();
+            var responseMetadataAttributes = methodSymbol.GetAttributes(symbolCache.ProducesResponseTypeAttribute, inherit: true);
             foreach (var attribute in responseMetadataAttributes)
             {
                 var statusCode = GetStatusCode(attribute);
