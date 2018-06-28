@@ -1,10 +1,10 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using BasicWebSite.Models;
+using FormatterWebSite.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BasicWebSite.Controllers
+namespace FormatterWebSite.Controllers
 {
     public class PolymorphicBindingController : ControllerBase
     {
@@ -19,7 +19,7 @@ namespace BasicWebSite.Controllers
         }
 
         [HttpPost]
-        public IActionResult InputFormatted([FromBody] IPerson person)
+        public IActionResult InputFormatted([FromBody] IModel person)
         {
             if (!ModelState.IsValid)
             {

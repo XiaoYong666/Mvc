@@ -2,21 +2,21 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using BasicWebSite.Models;
+using FormatterWebSite.Models;
 using Newtonsoft.Json;
 
-namespace BasicWebSite
+namespace FormatterWebSite
 {
-    public class IPersonConverter : JsonConverter
+    public class IModelConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(IPerson);
+            return objectType == typeof(IModel);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            return new DerivedPerson
+            return new DerivedModel
             {
                 DerivedProperty = reader.Value.ToString(),
             };

@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.Extensions.Logging;
@@ -283,7 +284,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
             ModelBindingContext modelBindingContext,
             ModelBindingResult modelBindingResult)
         {
-            TryCalculateModelMetadata(parameter, modelBindingResult, ref metadata);
+            RecalculateModelMetadata(parameter, modelBindingResult, ref metadata);
 
             if (!modelBindingResult.IsModelSet && metadata.IsBindingRequired)
             {
@@ -333,9 +334,9 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
             }
         }
 
-        private void TryCalculateModelMetadata(
+        private void RecalculateModelMetadata(
             ParameterDescriptor parameter,
-            in ModelBindingResult modelBindingResult,
+            ModelBindingResult modelBindingResult,
             ref ModelMetadata metadata)
         {
             // Attempt to recalculate ModelMetadata for top level parameters and properties using the actual

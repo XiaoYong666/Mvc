@@ -3,9 +3,9 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace BasicWebSite.Models
+namespace FormatterWebSite.Models
 {
-    public class DerivedPerson : Person, IPerson
+    public class DerivedModel : BaseModel, IModel
     {
         [Required]
         [StringLength(10)]

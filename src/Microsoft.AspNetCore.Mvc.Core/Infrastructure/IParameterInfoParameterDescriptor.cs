@@ -3,7 +3,7 @@
 
 using System.Reflection;
 
-namespace Microsoft.AspNetCore.Mvc.Internal
+namespace Microsoft.AspNetCore.Mvc.Infrastructure
 {
     public interface IParameterInfoParameterDescriptor
     {

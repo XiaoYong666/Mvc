@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Linq;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -31,14 +30,12 @@ namespace BasicWebSite
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .AddXmlDataContractSerializerFormatters();
 
-            services.Configure<MvcJsonOptions>(options => { options.SerializerSettings.Converters.Insert(0, new IPersonConverter()); });
-
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 var previous = options.InvalidModelStateResponseFactory;
                 options.InvalidModelStateResponseFactory = context =>
                 {
-                    var result = (BadRequestObjectResult) previous(context);
+                    var result = (BadRequestObjectResult)previous(context);
                     if (context.ActionDescriptor.FilterDescriptors.Any(f => f.Filter is VndErrorAttribute))
                     {
                         result.ContentTypes.Clear();

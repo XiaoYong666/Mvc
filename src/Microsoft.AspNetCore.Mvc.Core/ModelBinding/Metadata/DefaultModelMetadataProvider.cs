@@ -103,19 +103,6 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Metadata
             => GetMetadataForParameter(parameter, parameter?.ParameterType);
 
         /// <inheritdoc />
-        public override ModelMetadata GetMetadataForType(Type modelType)
-        {
-            if (modelType == null)
-            {
-                throw new ArgumentNullException(nameof(modelType));
-            }
-
-            var cacheEntry = GetCacheEntry(modelType);
-
-            return cacheEntry.Metadata;
-        }
-
-        /// <inheritdoc />
         public override ModelMetadata GetMetadataForParameter(ParameterInfo parameter, Type modelType)
         {
             if (parameter == null)
@@ -129,6 +116,19 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Metadata
             }
 
             var cacheEntry = GetCacheEntry(parameter, modelType);
+
+            return cacheEntry.Metadata;
+        }
+
+        /// <inheritdoc />
+        public override ModelMetadata GetMetadataForType(Type modelType)
+        {
+            if (modelType == null)
+            {
+                throw new ArgumentNullException(nameof(modelType));
+            }
+
+            var cacheEntry = GetCacheEntry(modelType);
 
             return cacheEntry.Metadata;
         }
@@ -214,7 +214,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Metadata
             return new ModelMetadataCacheEntry(metadata, details);
         }
 
-        private DefaultMetadataDetails CreateSinglePropertyDetails(in ModelMetadataIdentity propertyKey)
+        private DefaultMetadataDetails CreateSinglePropertyDetails(ModelMetadataIdentity propertyKey)
         {
             var propertyHelpers = PropertyHelper.GetVisibleProperties(propertyKey.ContainerType);
             for (var i = 0; i < propertyHelpers.Length; i++)
@@ -287,7 +287,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Metadata
         }
 
         private DefaultMetadataDetails CreateSinglePropertyDetails(
-            in ModelMetadataIdentity propertyKey,
+            ModelMetadataIdentity propertyKey,
             PropertyHelper propertyHelper)
         {
             Debug.Assert(propertyKey.MetadataKind == ModelMetadataKind.Property);

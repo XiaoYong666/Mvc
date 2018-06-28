@@ -616,69 +616,6 @@ namespace Microsoft.AspNetCore.Mvc.FunctionalTests
             Assert.Equal("OnGetTestName", content);
         }
 
-        [Fact]
-        public async Task BindingWorksForPolymorphicTypes()
-        {
-            // Act
-            var response = await Client.GetAsync("PolymorphicBinding/ModelBound?DerivedProperty=Test");
-
-            // Assert
-            await response.AssertStatusCodeAsync(HttpStatusCode.OK);
-            var result = JsonConvert.DeserializeObject<DerivedPerson>(await response.Content.ReadAsStringAsync());
-            Assert.Equal("Test", result.DerivedProperty);
-        }
-
-        [Fact]
-        public async Task ValidationUsesModelMetadataFromActualModelType_ForModelBoundParameters()
-        {
-            // Act
-            var response = await Client.GetAsync("PolymorphicBinding/ModelBound");
-
-            // Assert
-            await response.AssertStatusCodeAsync(HttpStatusCode.BadRequest);
-            var result = JObject.Parse(await response.Content.ReadAsStringAsync());
-            Assert.Collection(
-                result.Properties(),
-                p =>
-                {
-                    Assert.Equal("DerivedProperty", p.Name);
-                    var value = Assert.IsType<JArray>(p.Value);
-                    Assert.Equal("The DerivedProperty field is required.", value.First);
-                });
-        }
-
-        [Fact]
-        public async Task InputFormatterWorksForPolymorphicTypes()
-        {
-            // Act
-            var input = "Test";
-            var response = await Client.PostAsJsonAsync("PolymorphicBinding/InputFormatted", input);
-
-            // Assert
-            await response.AssertStatusCodeAsync(HttpStatusCode.OK);
-            var result = JsonConvert.DeserializeObject<DerivedPerson>(await response.Content.ReadAsStringAsync());
-            Assert.Equal(input, result.DerivedProperty);
-        }
-
-        [Fact]
-        public async Task ValidationUsesModelMetadataFromActualModelType_ForInputFormattedParameters()
-        {
-            // Act
-            var response = await Client.PostAsJsonAsync("PolymorphicBinding/InputFormatted", string.Empty);
-
-            // Assert
-            await response.AssertStatusCodeAsync(HttpStatusCode.BadRequest);
-            var result = JObject.Parse(await response.Content.ReadAsStringAsync());
-            Assert.Collection(
-                result.Properties(),
-                p =>
-                {
-                    Assert.Equal("DerivedProperty", p.Name);
-                    var value = Assert.IsType<JArray>(p.Value);
-                    Assert.Equal("The DerivedProperty field is required.", value.First);
-                });
-        }
-
         public class BindPropertyControllerData
         {
             public string Name { get; set; }
