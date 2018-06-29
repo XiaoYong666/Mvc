@@ -340,7 +340,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
             ref ModelMetadata metadata)
         {
             // Attempt to recalculate ModelMetadata for top level parameters and properties using the actual
-            // model type. This would ensure validation uses a combination of top-level validation metadata
+            // model type. This ensures validation uses a combination of top-level validation metadata
             // as well as metadata on the actual, rather than declared, model type.
 
             if (!modelBindingResult.IsModelSet ||

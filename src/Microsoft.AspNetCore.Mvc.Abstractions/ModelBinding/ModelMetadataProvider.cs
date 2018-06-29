@@ -39,12 +39,6 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
         /// <param name="parameter">The <see cref="ParameterInfo"/></param>
         /// <param name="modelType">The actual model type.</param>
         /// <returns>A <see cref="ModelMetadata"/> instance describing the <paramref name="parameter"/>.</returns>
-        /// <remarks>
-        /// This methods supports model binders that return polymorphic results i.e. the actual model bound type is an interface
-        /// implementation or subtype of the declared type. It is expected that this method is invoked only when the
-        /// property type is different from the model type. In all other cases, <see cref="GetMetadataForParameter(ParameterInfo)"/>
-        /// should be used.
-        /// </remarks>
         public virtual ModelMetadata GetMetadataForParameter(ParameterInfo parameter, Type modelType)
         {
             throw new NotSupportedException();
@@ -56,12 +50,6 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
         /// <param name="propertyInfo">The <see cref="PropertyInfo"/>.</param>
         /// <param name="modelType">The actual model type.</param>
         /// <returns>A <see cref="ModelMetadata"/> instance describing the <paramref name="propertyInfo"/>.</returns>
-        /// <remarks>
-        /// This methods supports model binders that return polymorphic results i.e. the actual model bound type is an interface
-        /// implementation or subtype of the declared type. It is expected that this method is invoked only when the
-        /// property type is different from the model type. In all other cases, <see cref="GetMetadataForProperties(Type)"/> should
-        /// be used.
-        /// </remarks>
         public virtual ModelMetadata GetMetadataForProperty(PropertyInfo propertyInfo, Type modelType)
         {
             throw new NotSupportedException();
