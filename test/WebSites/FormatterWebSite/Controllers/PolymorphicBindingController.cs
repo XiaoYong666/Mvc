@@ -8,7 +8,7 @@ namespace FormatterWebSite.Controllers
 {
     public class PolymorphicBindingController : ControllerBase
     {
-        public IActionResult ModelBound([ModelBinder(typeof(PolymorphicBinder))] Person person)
+        public IActionResult ModelBound([ModelBinder(typeof(PolymorphicBinder))] BaseModel person)
         {
             if (!ModelState.IsValid)
             {
