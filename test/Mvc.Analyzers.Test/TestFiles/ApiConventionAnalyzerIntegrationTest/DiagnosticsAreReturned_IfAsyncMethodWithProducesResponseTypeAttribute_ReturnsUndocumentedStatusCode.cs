@@ -1,4 +1,7 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+
+[assembly: ApiConventionType(typeof(DefaultApiConventions))]
 
 namespace Microsoft.AspNetCore.Mvc.Analyzers
 {
@@ -11,8 +14,7 @@ namespace Microsoft.AspNetCore.Mvc.Analyzers
             await Task.Yield();
             if (id == 0)
             {
-                /*MM*/
-                return NotFound();
+                /*MM*/return NotFound();
             }
 
             return Ok();

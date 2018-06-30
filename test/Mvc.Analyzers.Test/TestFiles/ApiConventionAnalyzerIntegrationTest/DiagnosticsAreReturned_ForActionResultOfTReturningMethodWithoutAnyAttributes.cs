@@ -1,5 +1,7 @@
 ﻿using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+
+[assembly: ApiConventionType(typeof(DefaultApiConventions))]
 
 namespace Microsoft.AspNetCore.Mvc.Analyzers
 {

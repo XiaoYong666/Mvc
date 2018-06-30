@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 
 namespace Microsoft.AspNetCore.Mvc.Analyzers
@@ -12,18 +13,55 @@ namespace Microsoft.AspNetCore.Mvc.Analyzers
         private const string StatusCodeProperty = "StatusCode";
         private const string StatusCodeConstructorParameter = "statusCode";
 
-        internal static IList<ApiResponseMetadata> GetResponseMetadata(ApiControllerSymbolCache symbolCache, IMethodSymbol methodSymbol)
+        internal static IList<ApiResponseMetadata> GetResponseMetadata(
+            ApiControllerSymbolCache symbolCache, 
+            IMethodSymbol method,
+            IReadOnlyList<AttributeData> conventionTypeAttributes)
         {
-            var metadataItems = GetResponseMetadataFromAttributes(symbolCache, methodSymbol);
+            var metadataItems = GetResponseMetadataFromMethodAttributes(symbolCache, method);
             if (metadataItems.Count != 0)
             {
                 return metadataItems;
             }
 
+            metadataItems = GetResponseMetadataFromConventions(symbolCache, method, conventionTypeAttributes);
             return metadataItems;
         }
 
-        private static List<ApiResponseMetadata> GetResponseMetadataFromAttributes(ApiControllerSymbolCache symbolCache, IMethodSymbol methodSymbol)
+        private static IList<ApiResponseMetadata> GetResponseMetadataFromConventions(
+            ApiControllerSymbolCache symbolCache, 
+            IMethodSymbol method, 
+            IReadOnlyList<AttributeData> attributes)
+        {
+            foreach (var attribute in attributes)
+            {
+                if (attribute.ConstructorArguments.Length != 1 ||
+                    attribute.ConstructorArguments[0].Kind != TypedConstantKind.Type ||
+                    !(attribute.ConstructorArguments[0].Value is ITypeSymbol conventionType))
+                {
+                    continue;
+                }
+
+                foreach (var conventionMethod in conventionType.GetMembers().OfType<IMethodSymbol>())
+                {
+                    if (!conventionMethod.IsStatic || conventionMethod.DeclaredAccessibility != Accessibility.Public)
+                    {
+                        continue;
+                    }
+
+                    if (!SymbolApiConventionMatcher.IsMatch(symbolCache, method, conventionMethod))
+                    {
+                        continue;
+                    }
+
+                    return GetResponseMetadataFromMethodAttributes(symbolCache, conventionMethod);
+                }
+            }
+
+            return Array.Empty<ApiResponseMetadata>();
+        }
+
+        private static IList<ApiResponseMetadata> GetResponseMetadataFromMethodAttributes(ApiControllerSymbolCache symbolCache, IMethodSymbol methodSymbol)
         {
             var metadataItems = new List<ApiResponseMetadata>();
             var responseMetadataAttributes = methodSymbol.GetAttributes(symbolCache.ProducesResponseTypeAttribute, inherit: true);
@@ -45,7 +83,7 @@ namespace Microsoft.AspNetCore.Mvc.Analyzers
             {
                 var namedArgument = attribute.NamedArguments[i];
                 var namedArgumentValue = namedArgument.Value;
-                if (string.Equals(namedArgument.Key,  StatusCodeProperty, StringComparison.Ordinal) &&
+                if (string.Equals(namedArgument.Key, StatusCodeProperty, StringComparison.Ordinal) &&
                     namedArgumentValue.Kind == TypedConstantKind.Primitive &&
                     (namedArgumentValue.Type.SpecialType & SpecialType.System_Int32) == SpecialType.System_Int32 &&
                     namedArgumentValue.Value is int statusCode)

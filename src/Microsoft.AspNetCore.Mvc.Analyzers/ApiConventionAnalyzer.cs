@@ -1,6 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -45,14 +46,16 @@ namespace Microsoft.AspNetCore.Mvc.Analyzers
                 var semanticModel = syntaxNodeContext.SemanticModel;
                 var method = semanticModel.GetDeclaredSymbol(methodSyntax, syntaxNodeContext.CancellationToken);
 
-                if (!ShouldEvaluateMethod(symbolCache, method))
+                var conventionAttributes = GetConventionTypeAttributes(symbolCache, method);
+
+                if (!ShouldEvaluateMethod(symbolCache, method, conventionAttributes))
                 {
                     return;
                 }
 
                 var returnType = UnwrapMethodReturnType(symbolCache, semanticModel, method, methodSyntax);
 
-                var expectedResponseMetadata = SymbolApiResponseMetadataProvider.GetResponseMetadata(symbolCache, method);
+                var expectedResponseMetadata = SymbolApiResponseMetadataProvider.GetResponseMetadata(symbolCache, method, conventionAttributes);
                 var actualResponseMetadata = new HashSet<int>();
 
                 var context = new ApiConventionContext(
@@ -80,6 +83,17 @@ namespace Microsoft.AspNetCore.Mvc.Analyzers
 
             }, SyntaxKind.MethodDeclaration);
             
+        }
+
+        private IReadOnlyList<AttributeData> GetConventionTypeAttributes(ApiControllerSymbolCache symbolCache, IMethodSymbol method)
+        {
+            var attributes = method.ContainingType.GetAttributes(symbolCache.ApiConventionTypeAttribute).ToArray();
+            if (attributes.Length == 0)
+            {
+                attributes = method.ContainingAssembly.GetAttributes(symbolCache.ApiConventionTypeAttribute).ToArray();
+            }
+
+            return attributes;
         }
 
         private void VisitReturnStatementSyntax(
@@ -176,8 +190,13 @@ namespace Microsoft.AspNetCore.Mvc.Analyzers
             return returnType;
         }
 
-        private static bool ShouldEvaluateMethod(ApiControllerSymbolCache symbolCache, IMethodSymbol method)
+        private static bool ShouldEvaluateMethod(ApiControllerSymbolCache symbolCache, IMethodSymbol method, IReadOnlyList<AttributeData> attributes)
         {
+            if (attributes.Count == 0)
+            {
+                return false;
+            }
+
             if (method == null)
             {
                 return false;
@@ -201,11 +220,17 @@ namespace Microsoft.AspNetCore.Mvc.Analyzers
             return true;
         }
 
-        bool HasStatusCode(IList<ApiResponseMetadata> apiResponseMetadata, int statusCode)
+        internal bool HasStatusCode(IList<ApiResponseMetadata> declaredApiResponseMetadata, int statusCode)
         {
-            for (var i = 0; i < apiResponseMetadata.Count; i++)
+            if (declaredApiResponseMetadata.Count == 0)
             {
-                if (apiResponseMetadata[i].StatusCode == statusCode)
+                // When no status code is declared, a 200 OK is implied.
+                return statusCode == 200;
+            }
+
+            for (var i = 0; i < declaredApiResponseMetadata.Count; i++)
+            {
+                if (declaredApiResponseMetadata[i].StatusCode == statusCode)
                 {
                     return true;
                 }

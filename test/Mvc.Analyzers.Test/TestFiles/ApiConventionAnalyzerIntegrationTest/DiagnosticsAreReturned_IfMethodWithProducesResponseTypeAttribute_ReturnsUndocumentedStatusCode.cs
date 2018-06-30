@@ -1,4 +1,8 @@
-﻿namespace Microsoft.AspNetCore.Mvc.Analyzers
+﻿using Microsoft.AspNetCore.Mvc;
+
+[assembly: ApiConventionType(typeof(DefaultApiConventions))]
+
+namespace Microsoft.AspNetCore.Mvc.Analyzers
 {
     [ApiController]
     public class DiagnosticsAreReturned_IfMethodWithProducesResponseTypeAttribute_ReturnsUndocumentedStatusCode : ControllerBase

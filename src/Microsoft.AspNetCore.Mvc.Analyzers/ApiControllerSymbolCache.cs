@@ -11,7 +11,9 @@ namespace Microsoft.AspNetCore.Mvc.Analyzers
         public ApiControllerSymbolCache(Compilation compilation)
         {
             ActionResultOfT = compilation.GetTypeByMetadataName(SymbolNames.ActionResultOfT);
+            ApiConventionNameMatchAttribute = compilation.GetTypeByMetadataName(SymbolNames.ApiConventionNameMatchAttribute);
             ApiConventionTypeAttribute = compilation.GetTypeByMetadataName(SymbolNames.ApiConventionTypeAttribute);
+            ApiConventionTypeMatchAttribute = compilation.GetTypeByMetadataName(SymbolNames.ApiConventionTypeMatchAttribute);
             ControllerAttribute = compilation.GetTypeByMetadataName(SymbolNames.ControllerAttribute);
             DefaultStatusCodeAttribute = compilation.GetTypeByMetadataName(SymbolNames.DefaultStatusCodeAttribute);
             IActionResult = compilation.GetTypeByMetadataName(SymbolNames.IActionResult);
@@ -28,14 +30,17 @@ namespace Microsoft.AspNetCore.Mvc.Analyzers
 
         public INamedTypeSymbol ActionResultOfT { get; }
 
+        public INamedTypeSymbol ApiConventionNameMatchAttribute { get; }
+
         public INamedTypeSymbol ApiConventionTypeAttribute { get; }
+
+        public INamedTypeSymbol ApiConventionTypeMatchAttribute { get; }
 
         public INamedTypeSymbol ControllerAttribute { get; }
 
         public INamedTypeSymbol DefaultStatusCodeAttribute { get; }
 
         public INamedTypeSymbol IActionResult { get; }
-
 
         public INamedTypeSymbol IApiBehaviorMetadata { get; }
 
